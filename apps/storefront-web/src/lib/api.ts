@@ -10,7 +10,10 @@ import {
   OrderDto
 } from '@amazingdeal/shared-types';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const API_BASE_URL = rawUrl.endsWith('/api/v1')
+  ? rawUrl.replace(/\/$/, '')
+  : `${rawUrl.replace(/\/$/, '')}/api/v1`;
 
 async function fetchWithTenant<T>(
   endpoint: string,

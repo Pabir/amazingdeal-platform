@@ -25,14 +25,25 @@ export default function middleware(req: NextRequest) {
 
   if (queryTenant) {
     tenantSlug = queryTenant.toLowerCase();
-  } else if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
-    // Check for subdomain e.g. footwear.platform.com or footwear.localhost
+  } else if (hostname.endsWith('.vercel.app')) {
+    // Vercel deployment:
+    // e.g. "amazingdeal-platform.vercel.app" (3 parts) -> Default root store: 'footwear'
+    // e.g. "threads.amazingdeal-platform.vercel.app" (4 parts) -> Subdomain tenant: 'threads'
     const parts = hostname.split('.');
-    if (parts.length >= 2 && parts[0] !== 'www' && parts[0] !== 'admin' && parts[0] !== 'api') {
+    if (parts.length >= 4 && parts[0] !== 'www') {
       tenantSlug = parts[0];
     } else {
-      // Custom domain mapping
-      tenantSlug = hostname;
+      tenantSlug = 'footwear';
+    }
+  } else if (hostname !== 'localhost' && hostname !== '127.0.0.1') {
+    // Custom domain routing:
+    // e.g. "footwear.yourdomain.com" (3 parts) -> Subdomain tenant: 'footwear'
+    // e.g. "yourdomain.com" or "www.yourdomain.com" -> Default root store: 'footwear'
+    const parts = hostname.split('.');
+    if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'admin' && parts[0] !== 'api') {
+      tenantSlug = parts[0];
+    } else {
+      tenantSlug = 'footwear';
     }
   }
 
