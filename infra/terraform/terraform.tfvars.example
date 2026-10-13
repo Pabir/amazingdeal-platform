@@ -1,0 +1,24 @@
+# Copy this file to terraform.tfvars and customize with your preferred values
+
+aws_region  = "us-east-1"
+environment = "production"
+app_name    = "amazingdeal"
+
+# Aurora Serverless v2 Scaling
+db_name         = "amazingdeal_commerce"
+db_username     = "postgres"
+db_min_capacity = 0.5
+db_max_capacity = 4.0
+
+# ECS Fargate Sizing
+backend_cpu           = 1024
+backend_memory        = 2048
+backend_desired_count = 2
+
+# Custom Domain & SSL (Optional - leave empty to use raw AWS URLs)
+domain_name     = ""
+certificate_arn = ""
+
+# GitHub Repo for AWS Amplify (Optional)
+github_repo_url     = ""
+github_access_token = ""

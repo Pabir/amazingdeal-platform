@@ -1,0 +1,24 @@
+services:
+  - type: web
+    name: amazingdeal-commerce-api
+    runtime: docker
+    dockerfilePath: ./services/commerce-api/Dockerfile
+    dockerContext: ./services/commerce-api
+    plan: free
+    region: ohio
+    healthCheckPath: /actuator/health
+    envVars:
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod
+      - key: SPRING_DATASOURCE_URL
+        sync: false
+      - key: SPRING_DATASOURCE_USERNAME
+        sync: false
+      - key: SPRING_DATASOURCE_PASSWORD
+        sync: false
+      - key: APP_JWT_SECRET
+        generateValue: true
+      - key: APP_CORS_ALLOWED_ORIGINS
+        value: "*"
+      - key: JAVA_OPTS
+        value: "-XX:+UseContainerSupport -XX:+UseSerialGC -Xss512k -XX:MaxRAMPercentage=75.0"

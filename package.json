@@ -1,0 +1,16 @@
+{
+  "name": "amazingdeal-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Multi-Tenant Commerce Engine for Offline Retailers",
+  "scripts": {
+    "dev:admin": "pnpm --filter admin-web dev",
+    "dev:storefront": "pnpm --filter storefront-web dev",
+    "build": "pnpm -r build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
