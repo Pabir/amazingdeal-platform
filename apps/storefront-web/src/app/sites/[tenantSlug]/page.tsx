@@ -57,6 +57,7 @@ export default async function StorefrontPage({
           {/* Search Bar Form */}
           <div className="pt-4 max-w-xl mx-auto">
             <form method="GET" action="/" className="relative flex items-center">
+              <input type="hidden" name="store" value={tenantSlug} />
               <Search className="w-5 h-5 absolute left-4 text-slate-400" />
               <input
                 type="text"
@@ -82,7 +83,7 @@ export default async function StorefrontPage({
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
           <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
             <Link
-              href="/"
+              href={`/?store=${tenantSlug}`}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                 !categoryId && !isFeatured
                   ? 'bg-slate-900 text-white shadow-sm'
@@ -93,7 +94,7 @@ export default async function StorefrontPage({
             </Link>
 
             <Link
-              href="/?featured=true"
+              href={`/?featured=true&store=${tenantSlug}`}
               className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                 isFeatured
                   ? 'bg-slate-900 text-white shadow-sm'
@@ -108,7 +109,7 @@ export default async function StorefrontPage({
               return (
                 <Link
                   key={cat.id}
-                  href={`/?category=${cat.id}`}
+                  href={`/?category=${cat.id}&store=${tenantSlug}`}
                   className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition ${
                     active
                       ? 'bg-slate-900 text-white shadow-sm'
@@ -137,7 +138,7 @@ export default async function StorefrontPage({
               We couldn't find any products matching your current filters. Try resetting the category or search query.
             </p>
             <Link
-              href="/"
+              href={`/?store=${tenantSlug}`}
               className="inline-block mt-4 px-5 py-2.5 rounded-xl font-semibold text-xs text-white bg-slate-900 hover:bg-slate-800 transition"
             >
               View All Products

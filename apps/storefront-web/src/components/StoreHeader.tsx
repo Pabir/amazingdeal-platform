@@ -34,7 +34,7 @@ export function StoreHeader({ tenant, categories }: StoreHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Store Title */}
-          <Link href={`/`} className="flex items-center gap-3 group">
+          <Link href={`/?store=${tenant.slug}`} className="flex items-center gap-3 group">
             {tenant.branding.logoUrl ? (
               <img
                 src={tenant.branding.logoUrl}
@@ -59,7 +59,7 @@ export function StoreHeader({ tenant, categories }: StoreHeaderProps) {
           {/* Navigation Categories */}
           <nav className="hidden md:flex items-center gap-6">
             <Link
-              href="/"
+              href={`/?store=${tenant.slug}`}
               className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition"
             >
               All Products
@@ -67,7 +67,7 @@ export function StoreHeader({ tenant, categories }: StoreHeaderProps) {
             {categories.slice(0, 4).map((cat) => (
               <Link
                 key={cat.id}
-                href={`/?category=${cat.id}`}
+                href={`/?category=${cat.id}&store=${tenant.slug}`}
                 className="text-sm font-semibold text-slate-600 hover:text-brand-600 transition"
               >
                 {cat.name}

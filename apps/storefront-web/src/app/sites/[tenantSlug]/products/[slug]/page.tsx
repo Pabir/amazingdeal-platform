@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getTenant, getProduct } from '@/lib/api';
 import { AddToCartButton } from '@/components/AddToCartButton';
 import { ChevronRight, ShieldCheck, Truck, RefreshCw, Star } from 'lucide-react';
+import { TenantDto, ProductDto } from '@amazingdeal/shared-types';
 
 interface ProductPageProps {
   params: {
@@ -47,17 +48,36 @@ export async function generateMetadata({ params }: ProductPageProps) {
       },
     };
   } catch {
-    return {
-      title: 'Product Not Found',
-    };
+    const altTenant = params.tenantSlug === 'footwear' ? 'threads' : 'footwear';
+    try {
+      const [altTenantData, altProduct] = await Promise.all([
+        getTenant(altTenant),
+        getProduct(altTenant, params.slug),
+      ]);
+      const images = parseImages(altProduct.images);
+      const imageUrl = images[0] || '';
+      return {
+        title: `${altProduct.title} | ${altTenantData.branding.storeName}`,
+        description: altProduct.shortDescription || altProduct.description.substring(0, 160),
+        openGraph: {
+          title: altProduct.title,
+          description: altProduct.shortDescription || altProduct.description.substring(0, 160),
+          images: imageUrl ? [{ url: imageUrl }] : [],
+        },
+      };
+    } catch {
+      return {
+        title: 'Product Not Found',
+      };
+    }
   }
 }
 
 export default async function ProductDetailPage({ params }: ProductPageProps) {
   const { tenantSlug, slug } = params;
 
-  let tenant;
-  let product;
+  let tenant: TenantDto;
+  let product: ProductDto;
 
   try {
     [tenant, product] = await Promise.all([
@@ -65,6 +85,26 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
       getProduct(tenantSlug, slug),
     ]);
   } catch (e) {
+    // Smart demo tenant fallback:
+    // If the product wasn't found in current tenant (e.g. footwear default),
+    // check if it exists in another known demo tenant (e.g. threads).
+    const altTenant = tenantSlug === 'footwear' ? 'threads' : (tenantSlug === 'threads' ? 'footwear' : null);
+    if (altTenant) {
+      let foundAlt = false;
+      try {
+        const altProduct = await getProduct(altTenant, slug);
+        if (altProduct) {
+          foundAlt = true;
+        }
+      } catch {
+        // Product not in alt tenant
+      }
+
+      if (foundAlt) {
+        redirect(`/products/${slug}?store=${altTenant}`);
+      }
+    }
+
     notFound();
   }
 
@@ -83,7 +123,7 @@ export default async function ProductDetailPage({ params }: ProductPageProps) {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
       {/* Breadcrumb */}
       <nav className="flex items-center gap-2 text-xs font-semibold text-slate-500">
-        <Link href="/" className="hover:text-slate-900 transition">
+        <Link href={`/?store=${tenantSlug}`} className="hover:text-slate-900 transition">
           Home
         </Link>
         <ChevronRight className="w-3.5 h-3.5 text-slate-300" />

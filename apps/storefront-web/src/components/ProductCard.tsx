@@ -43,10 +43,12 @@ export function ProductCard({ product, tenant }: ProductCardProps) {
     await addItem(tenant.slug, product.id, undefined, 1);
   };
 
+  const productUrl = `/products/${product.slug}${tenant?.slug ? `?store=${tenant.slug}` : ''}`;
+
   return (
     <div className="group rounded-2xl bg-white border border-slate-200/80 overflow-hidden card-hover flex flex-col h-full shadow-xs">
       {/* Image Container */}
-      <Link href={`/products/${product.slug}`} className="relative aspect-square overflow-hidden bg-slate-100 block">
+      <Link href={productUrl} className="relative aspect-square overflow-hidden bg-slate-100 block">
         <img
           src={primaryImage}
           alt={product.title}
@@ -82,7 +84,7 @@ export function ProductCard({ product, tenant }: ProductCardProps) {
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
             SKU: {product.sku}
           </span>
-          <Link href={`/products/${product.slug}`}>
+          <Link href={productUrl}>
             <h3 className="font-bold text-slate-900 text-base mt-1 line-clamp-1 group-hover:text-brand-600 transition">
               {product.title}
             </h3>
@@ -112,7 +114,7 @@ export function ProductCard({ product, tenant }: ProductCardProps) {
 
           <div className="flex items-center gap-1.5">
             <Link
-              href={`/products/${product.slug}`}
+              href={productUrl}
               className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition"
               title="View details"
             >
