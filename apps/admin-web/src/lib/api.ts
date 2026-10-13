@@ -14,7 +14,10 @@ import {
   UpdateTenantRequest
 } from '@amazingdeal/shared-types';
 
-const API_BASE_URL = 'http://localhost:8080/api/v1';
+const rawUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined) || 'http://localhost:8080/api/v1';
+const API_BASE_URL = rawUrl.endsWith('/api/v1')
+  ? rawUrl.replace(/\/$/, '')
+  : `${rawUrl.replace(/\/$/, '')}/api/v1`;
 
 function getAuthHeader(): Record<string, string> {
   const token = localStorage.getItem('admin_token');
