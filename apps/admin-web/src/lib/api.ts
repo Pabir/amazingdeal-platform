@@ -16,9 +16,16 @@ import {
 
 const DEFAULT_API_URL = 'https://amazingdeal-commerce-api-2pab.onrender.com/api/v1';
 
+// If an environment variable still points to the old suspended service, ignore it
+const envApiUrl = import.meta.env.VITE_API_BASE_URL as string | undefined;
+const sanitizedEnvUrl =
+  envApiUrl && !envApiUrl.includes('amazingdeal-commerce-api.onrender.com')
+    ? envApiUrl
+    : undefined;
+
 const rawUrl =
   (typeof window !== 'undefined' && localStorage.getItem('admin_api_base_url')) ||
-  (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
+  sanitizedEnvUrl ||
   DEFAULT_API_URL;
 
 const API_BASE_URL = rawUrl.endsWith('/api/v1')
