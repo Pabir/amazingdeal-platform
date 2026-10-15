@@ -153,5 +153,15 @@ export async function uploadMedia(file: File): Promise<string> {
   }
 
   const json: ApiResponse<{ url: string; filename: string }> = await res.json();
-  return json.data.url;
+  let mediaUrl = json.data?.url || '';
+
+  // If backend returned a localhost URL while the client is communicating with a remote backend,
+  // remap to the actual public backend domain
+  if (mediaUrl.includes('localhost:8080/media/')) {
+    const filename = json.data?.filename || mediaUrl.split('/media/').pop();
+    const backendOrigin = new URL(API_BASE_URL).origin;
+    mediaUrl = `${backendOrigin}/media/${filename}`;
+  }
+
+  return mediaUrl;
 }
