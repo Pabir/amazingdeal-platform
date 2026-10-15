@@ -1,5 +1,6 @@
 package com.amazingdeal.commerce.modules.catalog.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -36,10 +37,14 @@ public record CreateProductRequest(
     @Min(value = 0, message = "Stock quantity cannot be negative")
     int stockQuantity,
 
-    String images, // JSON array string e.g. ["url1", "url2"]
+    @JsonDeserialize(using = com.amazingdeal.commerce.core.common.FlexibleStringArrayDeserializer.class)
+    String images,
+
     UUID categoryId,
     Boolean featured,
     Boolean active,
+
+    @JsonDeserialize(using = com.amazingdeal.commerce.core.common.FlexibleStringArrayDeserializer.class)
     String tags,
     List<CreateVariantRequest> variants
 ) {

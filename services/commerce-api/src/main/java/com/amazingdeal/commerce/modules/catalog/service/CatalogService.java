@@ -111,9 +111,11 @@ public class CatalogService {
 
         if (request.variants() != null && !request.variants().isEmpty()) {
             List<ProductVariant> variants = new ArrayList<>();
+            UUID currentTenantId = TenantContextHolder.requireTenantId();
             for (CreateProductRequest.CreateVariantRequest vReq : request.variants()) {
                 ProductVariant variant = new ProductVariant();
                 variant.setProductId(product.getId());
+                variant.setTenantId(currentTenantId);
                 variant.setSku(vReq.sku());
                 variant.setTitle(vReq.title());
                 variant.setPrice(vReq.price());
@@ -134,20 +136,56 @@ public class CatalogService {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
 
+        UUID currentTenantId = TenantContextHolder.getTenantId().orElse(product.getTenantId());
+        if (!product.getTenantId().equals(currentTenantId)) {
+            throw new ResourceNotFoundException("Product not found with id: " + productId);
+        }
+
         if (request.title() != null) product.setTitle(request.title());
-        if (request.slug() != null) product.setSlug(request.slug().toLowerCase().trim());
+        if (request.slug() != null) {
+            String slug = request.slug().toLowerCase().trim();
+            productRepository.findBySlug(slug).ifPresent(existing -> {
+                if (!existing.getId().equals(productId)) {
+                    throw new BadRequestException("Product slug '" + slug + "' is already in use");
+                }
+            });
+            product.setSlug(slug);
+        }
         if (request.description() != null) product.setDescription(request.description());
         if (request.shortDescription() != null) product.setShortDescription(request.shortDescription());
         if (request.price() != null) product.setPrice(request.price());
         if (request.compareAtPrice() != null) product.setCompareAtPrice(request.compareAtPrice());
         if (request.costPrice() != null) product.setCostPrice(request.costPrice());
-        if (request.sku() != null) product.setSku(request.sku());
+        if (request.sku() != null) {
+            productRepository.findBySku(request.sku()).ifPresent(existing -> {
+                if (!existing.getId().equals(productId)) {
+                    throw new BadRequestException("Product SKU '" + request.sku() + "' is already in use");
+                }
+            });
+            product.setSku(request.sku());
+        }
         if (request.stockQuantity() != null) product.setStockQuantity(request.stockQuantity());
         if (request.images() != null) product.setImages(request.images());
         if (request.categoryId() != null) product.setCategoryId(request.categoryId());
         if (request.featured() != null) product.setFeatured(request.featured());
         if (request.active() != null) product.setActive(request.active());
         if (request.tags() != null) product.setTags(request.tags());
+
+        if (request.variants() != null) {
+            product.getVariants().clear();
+            for (CreateProductRequest.CreateVariantRequest vReq : request.variants()) {
+                ProductVariant variant = new ProductVariant();
+                variant.setProductId(product.getId());
+                variant.setTenantId(product.getTenantId());
+                variant.setSku(vReq.sku());
+                variant.setTitle(vReq.title());
+                variant.setPrice(vReq.price());
+                variant.setCompareAtPrice(vReq.compareAtPrice());
+                variant.setStockQuantity(vReq.stockQuantity());
+                variant.setOptions(vReq.options() != null ? vReq.options() : "{}");
+                product.getVariants().add(variant);
+            }
+        }
 
         product = productRepository.save(product);
         return ProductDto.from(product);
@@ -157,6 +195,11 @@ public class CatalogService {
     public void deleteProduct(UUID productId) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+        TenantContextHolder.getTenantId().ifPresent(currentTenantId -> {
+            if (!product.getTenantId().equals(currentTenantId)) {
+                throw new ResourceNotFoundException("Product not found with id: " + productId);
+            }
+        });
         productRepository.delete(product);
     }
 
@@ -164,6 +207,11 @@ public class CatalogService {
     public ProductDto getProductById(UUID productId) {
         Product product = productRepository.findById(productId)
             .orElseThrow(() -> new ResourceNotFoundException("Product not found with id: " + productId));
+        TenantContextHolder.getTenantId().ifPresent(currentTenantId -> {
+            if (!product.getTenantId().equals(currentTenantId)) {
+                throw new ResourceNotFoundException("Product not found with id: " + productId);
+            }
+        });
         return ProductDto.from(product);
     }
 

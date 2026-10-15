@@ -7,8 +7,8 @@ WORKDIR /workspace
 COPY mvnw mvnw.cmd pom.xml ./
 COPY .mvn .mvn
 
-# Make mvnw executable and download dependencies
-RUN chmod +x ./mvnw && ./mvnw dependency:go-offline -B
+# Strip Windows CRLF line endings and copy source
+RUN sed -i 's/\r$//' ./mvnw && chmod +x ./mvnw
 
 # Copy source code and package
 COPY src src

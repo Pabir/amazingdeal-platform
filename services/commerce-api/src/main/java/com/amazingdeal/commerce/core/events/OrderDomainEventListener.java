@@ -24,7 +24,7 @@ public class OrderDomainEventListener {
     public void onOrderPlaced(OrderPlacedEvent event) {
         log.info("Processing OrderPlacedEvent for order: {} on tenant: {}", event.orderNumber(), event.tenantId());
 
-        // Ensure tenant context is set for async or event processing
+        var priorContext = TenantContextHolder.getContext();
         TenantContextHolder.setContext(new TenantContext(event.tenantId(), null, null));
         try {
             // 1. Decrement inventory stock
@@ -36,7 +36,11 @@ public class OrderDomainEventListener {
             // 2. Dispatch simulated WhatsApp / SMS / Email merchant notification
             sendMerchantNotification(event);
         } finally {
-            TenantContextHolder.clear();
+            if (priorContext.isPresent()) {
+                TenantContextHolder.setContext(priorContext.get());
+            } else {
+                TenantContextHolder.clear();
+            }
         }
     }
 

@@ -21,6 +21,10 @@ public class Product extends BaseTenantEntity {
     @Column(name = "category_id")
     private UUID categoryId;
 
+    @jakarta.persistence.ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", insertable = false, updatable = false)
+    private Category category;
+
     @Column(name = "title", nullable = false)
     private String title;
 
@@ -70,6 +74,14 @@ public class Product extends BaseTenantEntity {
 
     public void setCategoryId(UUID categoryId) {
         this.categoryId = categoryId;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public String getTitle() {

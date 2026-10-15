@@ -127,3 +127,25 @@ export async function updateAdminOrderStatus(id: string, data: UpdateOrderStatus
     body: JSON.stringify(data),
   });
 }
+
+// Media Upload
+export async function uploadMedia(file: File): Promise<string> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const res = await fetch(`${API_BASE_URL}/media/upload`, {
+    method: 'POST',
+    headers: {
+      ...getAuthHeader(),
+    },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(errorBody.message || 'Image upload failed');
+  }
+
+  const json: ApiResponse<{ url: string; filename: string }> = await res.json();
+  return json.data.url;
+}

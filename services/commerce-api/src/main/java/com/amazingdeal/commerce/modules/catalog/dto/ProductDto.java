@@ -11,6 +11,7 @@ public record ProductDto(
     UUID id,
     UUID tenantId,
     UUID categoryId,
+    String categoryName,
     String title,
     String slug,
     String description,
@@ -34,10 +35,18 @@ public record ProductDto(
             ? p.getVariants().stream().map(ProductVariantDto::from).toList()
             : List.of();
 
+        String catName = null;
+        try {
+            if (p.getCategory() != null) {
+                catName = p.getCategory().getName();
+            }
+        } catch (Exception ignored) {}
+
         return new ProductDto(
             p.getId(),
             p.getTenantId(),
             p.getCategoryId(),
+            catName,
             p.getTitle(),
             p.getSlug(),
             p.getDescription(),

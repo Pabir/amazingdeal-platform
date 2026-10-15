@@ -9,10 +9,14 @@ spring:
     active: dev
 
   datasource:
-    url: jdbc:h2:mem:commerce_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE
+    url: ${SPRING_DATASOURCE_URL:jdbc:h2:file:./data/commerce_db;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;AUTO_SERVER=TRUE;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE}
     driver-class-name: org.h2.Driver
     username: sa
     password: ""
+
+  jackson:
+    deserialization:
+      accept-empty-string-as-null-object: true
 
   jpa:
     open-in-view: false

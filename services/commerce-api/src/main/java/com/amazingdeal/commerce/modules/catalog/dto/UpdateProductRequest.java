@@ -14,10 +14,12 @@ public record UpdateProductRequest(
     BigDecimal costPrice,
     String sku,
     Integer stockQuantity,
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.amazingdeal.commerce.core.common.FlexibleStringArrayDeserializer.class)
     String images,
     UUID categoryId,
     Boolean featured,
     Boolean active,
+    @com.fasterxml.jackson.databind.annotation.JsonDeserialize(using = com.amazingdeal.commerce.core.common.FlexibleStringArrayDeserializer.class)
     String tags,
     List<CreateProductRequest.CreateVariantRequest> variants
 ) {}
