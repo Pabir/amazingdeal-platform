@@ -14,7 +14,13 @@ import {
   UpdateTenantRequest
 } from '@amazingdeal/shared-types';
 
-const rawUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined) || 'http://localhost:8080/api/v1';
+const DEFAULT_API_URL = 'https://amazingdeal-commerce-api-2pab.onrender.com/api/v1';
+
+const rawUrl =
+  (typeof window !== 'undefined' && localStorage.getItem('admin_api_base_url')) ||
+  (import.meta.env.VITE_API_BASE_URL as string | undefined) ||
+  DEFAULT_API_URL;
+
 const API_BASE_URL = rawUrl.endsWith('/api/v1')
   ? rawUrl.replace(/\/$/, '')
   : `${rawUrl.replace(/\/$/, '')}/api/v1`;

@@ -10,7 +10,8 @@ import {
   OrderDto
 } from '@amazingdeal/shared-types';
 
-const rawUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080/api/v1';
+const DEFAULT_API_URL = 'https://amazingdeal-commerce-api-2pab.onrender.com/api/v1';
+const rawUrl = process.env.NEXT_PUBLIC_API_URL || DEFAULT_API_URL;
 const API_BASE_URL = rawUrl.endsWith('/api/v1')
   ? rawUrl.replace(/\/$/, '')
   : `${rawUrl.replace(/\/$/, '')}/api/v1`;
